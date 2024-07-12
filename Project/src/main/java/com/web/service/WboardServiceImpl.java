@@ -60,6 +60,13 @@ public class WboardServiceImpl implements WboardService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean deleteProductByName(String wboard_name) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	
 	
 }
