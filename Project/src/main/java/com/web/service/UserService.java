@@ -2,10 +2,11 @@ package com.web.service;
 
 import com.web.entity.User;
 
+import java.util.Optional;
+
 public interface UserService {
-    void registerUser(User user);
-    User findByUserIdAndUserPassword(String userId, String userPassword);
-    boolean isUserIdExists(String userId);
-    boolean isUserNickNameExists(String userNickName);
-    User getUserById(String userId);
+    boolean existsByUserId(String userId);
+    boolean existsByUserNickName(String userNickName);
+    void saveUser(User user);
+    Optional<User> findByUserId(String userId);
 }

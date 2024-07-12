@@ -1,18 +1,14 @@
 package com.web.repository;
 
-import java.util.List;
-
+import com.web.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.web.entity.User;
-
+import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String>, UserRepositoryCustom {
-    User findByUserId(String userId);
+public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByUserId(String userId);
     boolean existsByUserNickName(String userNickName);
-    
-    List<User> findByUserNameContainingIgnoreCaseOrUserNickNameContainingIgnoreCase(String name, String nickname);
+    Optional<User> findByUserId(String userId);
 }

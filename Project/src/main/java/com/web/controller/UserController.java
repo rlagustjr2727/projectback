@@ -1,21 +1,14 @@
 package com.web.controller;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
+import com.web.entity.User;
+import com.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.web.entity.User;
-import com.web.service.UserService;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 
 @Validated
@@ -26,32 +19,48 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
-        try {
-            String userId = loginRequest.get("userId");
-            String userPassword = loginRequest.get("userPassword");
-            User user = userService.findByUserIdAndUserPassword(userId, userPassword);
-            if (user != null) {
-                session.setAttribute("userId", user.getUserId());
-                return ResponseEntity.ok(Map.of("message", "Login success"));
-            } else {
-                return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
-            }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(400).body(Map.of("message", "Invalid user ID format"));
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody User user) {
+        if (userService.existsByUserId(user.getUserId())) {
+            return ResponseEntity.badRequest().body("아이디가 이미 존재합니다.");
         }
+
+        if (userService.existsByUserNickName(user.getUserNickName())) {
+            return ResponseEntity.badRequest().body("닉네임이 이미 존재합니다.");
+        }
+
+        userService.saveUser(user);
+        return ResponseEntity.ok("회원가입 성공");
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody User user) {
-        userService.registerUser(user);
-        return ResponseEntity.ok(Map.of("message", "Register success"));
+    @GetMapping("/checkUserId")
+    public ResponseEntity<Boolean> checkUserId(@RequestParam String userId) {
+        boolean exists = userService.existsByUserId(userId);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/checkUserNickName")
+    public ResponseEntity<Boolean> checkUserNickName(@RequestParam String userNickName) {
+        boolean exists = userService.existsByUserNickName(userNickName);
+        return ResponseEntity.ok(exists);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest, HttpSession session) {
+        User user = userService.findByUserId(loginRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        if (!loginRequest.getUserPassword().equals(user.getUserPassword())) {
+            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
+        }
+
+        session.setAttribute("user", user);
+        return ResponseEntity.ok("로그인 성공");
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserId(@PathVariable String userId) {
-        User user = userService.getUserById(userId);
+        User user = userService.findByUserId(userId).orElse(null);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -61,9 +70,7 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Map<String, String>> logout(HttpSession session) {
-        if (session != null) {
-            session.invalidate();
-        }
+        session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Logout success"));
     }
 }
