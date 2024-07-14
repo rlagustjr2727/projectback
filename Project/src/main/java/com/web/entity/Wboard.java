@@ -41,15 +41,19 @@ public class Wboard {
     @JsonProperty("wboard_origin")
     private String wboardOrigin;
 
-    @Column(name = "wboard_alcohol", length = 20)
-    @JsonProperty("wboard_alcohol")
-    private String wboardAlcohol;
+    @Column(name = "wboard_abv", length = 20)
+    @JsonProperty("wboard_abv")
+    private String wboardAbv;
 
-    @Column(name = "wboard_age", length = 20)
-    @JsonProperty("wboard_age")
-    private String wboardAge;
+    @Column(name = "wboard_yo", length = 20)
+    @JsonProperty("wboard_yo")
+    private String wboardYo;
 
-    @Column(name = "wboard_alcohol_type", length = 10)
-    @JsonProperty("wboard_alcohol_type")
-    private String wboardAlcoholType;
+    @Column(name = "wboard_abv_type", length = 10)
+    @JsonProperty("wboard_abv_type")
+    private String wboardAbvType;
+    
+    @Column(name = "wboard_of_type", length = 20)
+    @JsonProperty("wboard_of_type")
+    private String wboardOfType;
 }

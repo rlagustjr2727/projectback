@@ -37,10 +37,6 @@ public class User {
     @JsonProperty("userEmail")
     private String userEmail;
 
-    @Column(name = "USER_DOMAIN", nullable = false)
-    @JsonProperty("userDomain")
-    private String userDomain;
-
     @Temporal(TemporalType.DATE)
     @Column(name = "USER_BIRTH", nullable = false)
     @JsonProperty("userBirth")

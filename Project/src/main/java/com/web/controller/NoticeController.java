@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +55,6 @@ public class NoticeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<NoticeEntity> createNotice(@RequestPart("notice") NoticeEntity notice,
                                                      @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
@@ -87,7 +85,6 @@ public class NoticeController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<NoticeEntity> updateNotice(@PathVariable Long id,
                                                      @RequestPart("notice") NoticeEntity notice,
                                                      @RequestPart(value = "image", required = false) MultipartFile image) {
@@ -118,7 +115,6 @@ public class NoticeController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteNotice(@PathVariable Long id) {
         noticeService.deleteNotice(id);
         return ResponseEntity.noContent().build();
