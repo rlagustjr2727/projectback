@@ -31,13 +31,6 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
-
-		<!-- OAuth2 Client Security -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
-		</dependency>
-
 		<!-- Java Mail Sender I/O -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

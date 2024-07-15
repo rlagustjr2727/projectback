@@ -5,4 +5,5 @@ import com.web.entity.User;
 
 public interface UserRepository extends JpaRepository<User, String> {
     User findByUserIdAndUserPassword(String userId, String userPassword);
+    User findByUserId(String userId);
 }

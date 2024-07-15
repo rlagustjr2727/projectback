@@ -21,7 +21,7 @@ import com.web.service.BoardService;
 
 @RestController
 @RequestMapping("/api/board")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class BoardController {
 
     @Autowired
@@ -135,6 +135,7 @@ public class BoardController {
         }
     }
 
+
     @DeleteMapping("/{seq}")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long seq, HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -168,14 +169,22 @@ public class BoardController {
     }
 
     @PostMapping("/like/{seq}")
-    public ResponseEntity<Void> likeBoard(@PathVariable Long seq) {
-        boardService.likeBoard(seq);
+    public ResponseEntity<Void> likeBoard(@PathVariable Long seq, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
+        }
+        boardService.likeBoard(seq, user);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/unlike/{seq}")
-    public ResponseEntity<Void> unlikeBoard(@PathVariable Long seq) {
-        boardService.unlikeBoard(seq);
+    public ResponseEntity<Void> unlikeBoard(@PathVariable Long seq, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
+        }
+        boardService.unlikeBoard(seq, user);
         return ResponseEntity.ok().build();
     }
 }

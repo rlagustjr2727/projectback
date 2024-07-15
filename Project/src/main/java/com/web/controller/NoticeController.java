@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.web.notice.NoticeEntity;
+import com.web.entity.NoticeEntity;
 import com.web.service.NoticeService;
 
 @RestController
