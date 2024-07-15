@@ -10,15 +10,15 @@ import com.web.entity.User;
 import com.web.repository.UserRepository;
 
 
-@Service
-public class CustomUserDetailsService implements UserDetailsService {
+//@Service
+//public class CustomUserDetailsService implements UserDetailsService {
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+//	@Override
+//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
 //    @Autowired
 //    private UserRepository userRepository;
 //
@@ -30,4 +30,4 @@ public class CustomUserDetailsService implements UserDetailsService {
 //        }
 //        return new UserPrincipal(user);
 //    }
-}
+//}

@@ -1,13 +1,16 @@
 package com.web.entity;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,14 +35,10 @@ public class User {
     @Column(name = "USER_PASSWORD", nullable = false)
     @JsonProperty("userPassword")
     private String userPassword;
-
+    
     @Column(name = "USER_EMAIL", nullable = false)
     @JsonProperty("userEmail")
     private String userEmail;
-
-    @Column(name = "USER_DOMAIN", nullable = false)
-    @JsonProperty("userDomain")
-    private String userDomain;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "USER_BIRTH", nullable = false)

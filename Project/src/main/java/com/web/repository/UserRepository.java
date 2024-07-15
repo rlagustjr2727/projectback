@@ -1,14 +1,8 @@
 package com.web.repository;
 
-import com.web.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.web.entity.User;
 
-import java.util.Optional;
-
-@Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    boolean existsByUserId(String userId);
-    boolean existsByUserNickName(String userNickName);
-    Optional<User> findByUserId(String userId);
+    User findByUserIdAndUserPassword(String userId, String userPassword);
 }

@@ -2,11 +2,8 @@ package com.web.service;
 
 import com.web.entity.User;
 
-import java.util.Optional;
-
 public interface UserService {
-    boolean existsByUserId(String userId);
-    boolean existsByUserNickName(String userNickName);
-    void saveUser(User user);
-    Optional<User> findByUserId(String userId);
+    void registerUser(User user); // 유저 정보를 등록합니다.
+    User authenticateUser(String userId, String userPassword); // 유저 인증을 수행합니다.
+	User updateUser(User user);
 }

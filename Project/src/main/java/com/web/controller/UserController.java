@@ -1,76 +1,80 @@
 package com.web.controller;
 
-import com.web.entity.User;
-import com.web.service.UserService;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
-import java.util.Map;
+import com.web.entity.User;
+import com.web.service.UserService;
 
-
-@Validated
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    private static final String UPLOADED_FOLDER = "uploads/";
+    
+    
+    // 회원가입 메서드
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        if (userService.existsByUserId(user.getUserId())) {
-            return ResponseEntity.badRequest().body("아이디가 이미 존재합니다.");
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        userService.registerUser(user);
+        return ResponseEntity.ok("User registered successfully");
+    }
+
+    // 프로필 이미지 업데이트 메서드
+    @PostMapping("/update-profile-image")
+    public ResponseEntity<User> updateProfileImage(@RequestParam("image") MultipartFile image, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
         }
 
-        if (userService.existsByUserNickName(user.getUserNickName())) {
-            return ResponseEntity.badRequest().body("닉네임이 이미 존재합니다.");
-        }
-
-        userService.saveUser(user);
-        return ResponseEntity.ok("회원가입 성공");
-    }
-
-    @GetMapping("/checkUserId")
-    public ResponseEntity<Boolean> checkUserId(@RequestParam String userId) {
-        boolean exists = userService.existsByUserId(userId);
-        return ResponseEntity.ok(exists);
-    }
-
-    @GetMapping("/checkUserNickName")
-    public ResponseEntity<Boolean> checkUserNickName(@RequestParam String userNickName) {
-        boolean exists = userService.existsByUserNickName(userNickName);
-        return ResponseEntity.ok(exists);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest, HttpSession session) {
-        User user = userService.findByUserId(loginRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-
-        if (!loginRequest.getUserPassword().equals(user.getUserPassword())) {
-            return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
-        }
-
-        session.setAttribute("user", user);
-        return ResponseEntity.ok("로그인 성공");
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserId(@PathVariable String userId) {
-        User user = userService.findByUserId(userId).orElse(null);
-        if (user != null) {
+        try {
+            byte[] bytes = image.getBytes();
+            Path path = Paths.get(UPLOADED_FOLDER + image.getOriginalFilename());
+            
+            if (Files.notExists(path.getParent())) {
+                Files.createDirectories(path.getParent());
+            }
+            
+            Files.write(path, bytes);
+            user.setUserProfileImage(UPLOADED_FOLDER + image.getOriginalFilename());
+            userService.updateUser(user);
+            session.setAttribute("user", user); // 세션 업데이트
             return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
+    
+    // 회원정보 수정 메서드
+    @PutMapping("/user")
+    public ResponseEntity<User> updateUser(@RequestBody User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute("user");
+        if (currentUser == null) {
+            return ResponseEntity.status(403).build();
+        }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpSession session) {
-        session.invalidate();
-        return ResponseEntity.ok(Map.of("message", "Logout success"));
+        currentUser.setUserNickName(user.getUserNickName());
+        currentUser.setUserEmail(user.getUserEmail());
+        currentUser.setUserPhoneNum(user.getUserPhoneNum());
+        currentUser.setUserPassword(user.getUserPassword());
+
+        userService.updateUser(currentUser);
+        session.setAttribute("user", currentUser);
+
+        return ResponseEntity.ok(currentUser);
     }
 }
