@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.web.entity.User;
 import com.web.repository.UserRepository;
+import com.web.entity.User;
+import com.web.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,13 +19,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerUser(User user) {
+    
         userRepository.save(user);
     }
 
     @Override
     public User authenticateUser(String userId, String userPassword) {
         return userRepository.findByUserIdAndUserPassword(userId, userPassword);
+    
     }
+
+	@Override
+	public User updateUser(User user) {
+		return userRepository.save(user);
+	}
+    
+    
+}
+
     
     @Override
     @Transactional

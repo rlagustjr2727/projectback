@@ -41,7 +41,7 @@ public class User {
     @Column(name = "USER_PASSWORD", nullable = false)
     @JsonProperty("userPassword")
     private String userPassword;
-
+    
     @Column(name = "USER_EMAIL", nullable = false)
     @JsonProperty("userEmail")
     private String userEmail;
