@@ -9,18 +9,23 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.web.entity.Board;
 import com.web.entity.User;
+import com.web.entity.User;
 import com.web.service.BoardService;
 
 @RestController
 @RequestMapping("/api/board")
+@CrossOrigin(origins = "http://localhost:3000")
 @CrossOrigin(origins = "http://localhost:3000")
 public class BoardController {
 
@@ -33,6 +38,7 @@ public class BoardController {
     public List<Board> getRecentBoards() {
         return boardService.getRecentBoards();
     }
+
 
     @GetMapping("/all")
     public List<Board> getAllBoards() {
@@ -57,6 +63,10 @@ public class BoardController {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.status(403).build();
+            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
         }
 
         try {
@@ -74,6 +84,8 @@ public class BoardController {
                 board.setBoardImage(null);
             }
             board.setBoardDate(new Date());
+            board.setBoardAuthor(user.getUserNickName());
+            board.setBoardProfileImage(user.getUserProfileImage());
             board.setBoardAuthor(user.getUserNickName());
             board.setBoardProfileImage(user.getUserProfileImage());
 
@@ -96,9 +108,16 @@ public class BoardController {
             return ResponseEntity.status(403).build();
         }
 
+            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
+        }
+
         try {
             Board existingBoard = boardService.getBoardBySeq(seq);
 
+            if (!existingBoard.getBoardAuthor().equals(user.getUserNickName())) {
             if (!existingBoard.getBoardAuthor().equals(user.getUserNickName())) {
                 return ResponseEntity.status(403).build();
             }
@@ -142,7 +161,15 @@ public class BoardController {
             return ResponseEntity.status(403).build();
         }
 
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long seq, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.status(403).build();
+        }
+
         Board board = boardService.getBoardBySeq(seq);
+        if (!board.getBoardAuthor().equals(user.getUserNickName())) {
+            return ResponseEntity.status(403).build();
         if (!board.getBoardAuthor().equals(user.getUserNickName())) {
             return ResponseEntity.status(403).build();
         }
@@ -156,22 +183,26 @@ public class BoardController {
         return boardService.searchBoardsByTitle(keyword, page, size);
     }
 
+
     @PostMapping("/increment-views/{seq}")
     public ResponseEntity<Void> incrementViews(@PathVariable Long seq) {
         boardService.incrementViews(seq);
         return ResponseEntity.ok().build();
     }
 
+
     @GetMapping("/category")
     public Page<Board> getBoardsByCategory(@RequestParam("category") String category, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return boardService.getBoardsByCategory(category, page, size);
     }
+
 
     @PostMapping("/like/{seq}")
     public ResponseEntity<Void> likeBoard(@PathVariable Long seq) {
         boardService.likeBoard(seq);
         return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/unlike/{seq}")
     public ResponseEntity<Void> unlikeBoard(@PathVariable Long seq) {
