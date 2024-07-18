@@ -32,10 +32,25 @@ public class BoardService {
     
     @Autowired
     private FavoriteRepository favoriteRepository;
+    
+    @Autowired
+    private SearchService searchService;
 
     @Autowired
     @Qualifier("boardRepositoryCustomImpl")
     private BoardRepositoryCustom boardRepositoryCustom;
+    
+    public List<Board> searchBoards(String query) {
+        return boardRepository.findByBoardTitleContainingOrBoardContentContaining(query, query);
+    }
+
+    public List<Board> searchCustomRecommendations(String query) {
+        return boardRepository.findByCategoryAndKeyword("맞춤추천", query);
+    }
+
+    public List<Board> searchAll(String query) {
+        return boardRepository.findByKeyword(query);
+    }
 
     public List<Board> getRecentBoards() {
         Page<Board> recentBoardsPage = boardRepository.findRecentBoards(PageRequest.of(0, 6));
@@ -134,4 +149,6 @@ public class BoardService {
         board.setBoardLikes(board.getBoardLikes() - 1);
         boardRepository.save(board);
     }
+    
+    
 }

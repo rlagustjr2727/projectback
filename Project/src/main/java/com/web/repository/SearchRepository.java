@@ -9,6 +9,8 @@ import com.web.entity.Search;
 
 public interface SearchRepository extends JpaRepository<Search, Long>, SearchRepositoryCustom{
 
-	 List<Search> findBySearchKeywordContainingIgnoreCase(String keyword);
+	 @Query("SELECT s FROM Search s ORDER BY s.searchCount DESC")
+	    List<Search> findTopSearches(int limit);
+	 
 	 
 }

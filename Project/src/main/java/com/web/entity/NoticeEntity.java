@@ -26,11 +26,15 @@ import lombok.Setter;
 public class NoticeEntity {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notice_seq")
+	@SequenceGenerator(name = "notice_seq", sequenceName = "notice_seq", allocationSize = 1)
     private Long noticeSeq;
 	
 	@Column(name= "admin_id", nullable = false)
 	private String adminId;
+	
+	@Column(name = "notice_category", nullable = false)
+	private String noticeCategory;
 	
 	@Column(name= "notice_title", nullable = false)
 	private String noticeTitle;
@@ -38,13 +42,13 @@ public class NoticeEntity {
 	@Column(name= "notice_content", nullable = false)
 	private String noticeContent;
 	
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
     @Column(name = "notice_date_time", nullable = false)
 	private Date noticeDateTime = new Date();
 	
 	@Column(name = "notice_content_image")
 	private String noticeContentImage;
 	
-	@Column(name = "notice_view-count", nullable = false)
+	@Column(name = "notice_view_count", nullable = false)
 	private int noticeViewCount;
 }

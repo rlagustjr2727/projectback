@@ -5,11 +5,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.web.entity.User;
@@ -42,23 +50,30 @@ public class UserController {
         }
 
         try {
-            byte[] bytes = image.getBytes();
-            Path path = Paths.get(UPLOADED_FOLDER + image.getOriginalFilename());
+            // 이미지 파일을 서버에 저장하는 로직을 추가합니다.
+            String imageUrl = saveImageToFileSystem(image);
             
-            if (Files.notExists(path.getParent())) {
-                Files.createDirectories(path.getParent());
-            }
+            // 데이터베이스에서 사용자 프로필 이미지 URL을 업데이트합니다.
+            User updatedUser = userService.updateProfileImage(user.getUserId(), imageUrl);
             
-            Files.write(path, bytes);
-            user.setUserProfileImage(UPLOADED_FOLDER + image.getOriginalFilename());
-            userService.updateUser(user);
-            session.setAttribute("user", user); // 세션 업데이트
-            return ResponseEntity.ok(user);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
+            // 세션에 업데이트된 사용자 정보를 저장합니다.
+            session.setAttribute("user", updatedUser);
+
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
+
+    private String saveImageToFileSystem(MultipartFile image) throws IOException {
+        String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+        Path path = Paths.get(UPLOADED_FOLDER, fileName);
+        Files.createDirectories(path.getParent());
+        Files.copy(image.getInputStream(), path);
+        return "/" + UPLOADED_FOLDER + fileName;
+    }
+    
+    
     
     // 회원정보 수정 메서드
     @PutMapping("/user")

@@ -28,7 +28,9 @@ public class Search {
 	// 검색에서 id 가 필요한 이유는 검색 기록을 개별적으로 관리하기 어렵고 
 	// 동일한 검색어에 대한 중복 데이터가 발생하기 때문
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	 @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "search_seq")
+    @SequenceGenerator(name = "search_seq", sequenceName = "search_seq", allocationSize = 1)
+	@Column(name = "search_id") 
 	private Long searchid;
 	
 	@Column(name = "search_keyword", nullable = false)
@@ -48,7 +50,7 @@ public class Search {
 	// 검색 히스토리를 저장하고 이를 바탕으로 인기 검색어나 추천 검색어를 제공하고자하면 날짜가 유용할 수 있음
 	// ex) 특정 기간 동안의 인기 검색어 조회 가능
 	//     - 최근 한 달 동안 가장 많이 검색된 키워드 찾기
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name = "created_at")
     private Date createdAt = new Date();   
 }

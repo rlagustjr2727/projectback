@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.web.entity.User;
 import com.web.repository.UserRepository;
-import com.web.entity.User;
-import com.web.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,11 +31,6 @@ public class UserServiceImpl implements UserService {
 	public User updateUser(User user) {
 		return userRepository.save(user);
 	}
-    
-    
-}
-
-    
     @Override
     @Transactional
     public User getUserById(String userId) {
@@ -46,5 +39,15 @@ public class UserServiceImpl implements UserService {
             Hibernate.initialize(user.getFavorites());
         }
         return user;
+    }
+    
+    @Override
+    public User updateProfileImage(String userId, String imageUrl) {
+        User user = userRepository.findByUserId(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        user.setUserProfileImage(imageUrl);
+        return userRepository.save(user);
     }
 }
